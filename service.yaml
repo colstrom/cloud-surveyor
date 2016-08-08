@@ -1,0 +1,9 @@
+---
+queues:
+  - [ec2-availability-zone-associations, 1]
+  - [ec2-instance-ready, 1]
+  - [ec2-instances, 2]
+  - [ec2-stale-regions, 1]
+  - [ec2-stale-tags, 1]
+  - [ec2-tags, 2]
+  - [eip-assignment-requests, 1]
