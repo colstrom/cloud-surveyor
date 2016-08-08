@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+
+require 'redis'
+require 'graphviz'
+
+redis = Redis.new
+
+GraphViz.new(:G, type: :graph).tap do |graph|
+  Redis.new.tap do |redis|
+    redis.smembers('regions').map do |region|
+      graph.add_node region
+      redis.smembers("region:#{region}:availability-zones").map do |az|
+        graph.add_node az
+        graph.add_edges region, az
+        redis.smembers("availability-zone:#{az}:instances").map do |instance|
+          graph.add_node instance
+          graph.add_edges az, instance
+        end
+      end
+    end
+  end
+  puts graph.to_s
+end
