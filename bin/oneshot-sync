@@ -4,6 +4,7 @@ require 'shoryuken'
 
 stale_regions = Shoryuken::Client.queues('ec2-stale-regions')
 stale_tags = Shoryuken::Client.queues('ec2-stale-tags')
+stale_vpcs = Shoryuken::Client.queues('ec2-stale-vpcs')
 
 DELAY = ENV.fetch('DELAY') { 90 }.freeze
 
@@ -15,4 +16,5 @@ REGIONS = ENV
 REGIONS.each do |region|
   stale_regions.send_message region
   stale_tags.send_message region
+  stale_vpcs.send_message region
 end
