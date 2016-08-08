@@ -5,5 +5,7 @@ queues:
   - [ec2-instances, 2]
   - [ec2-stale-regions, 1]
   - [ec2-stale-tags, 1]
+  - [ec2-stale-vpcs, 1]
   - [ec2-tags, 2]
+  - [ec2-vpcs, 2]
   - [eip-assignment-requests, 1]
