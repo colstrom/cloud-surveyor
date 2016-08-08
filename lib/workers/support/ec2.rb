@@ -45,6 +45,13 @@ module Support
     end
 
     Contract None => ::Concurrent::IVar
+    def vpcs
+      @vpcs ||= eventually do
+        api.describe_vpcs.vpcs.map(&:to_h).map(&:stringify_keys)
+      end
+    end
+
+    Contract None => ::Concurrent::IVar
     def addresses
       @addresses ||= eventually do
         api.describe_addresses.addresses
