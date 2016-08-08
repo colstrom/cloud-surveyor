@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+require 'shoryuken'
+
+stale_regions = Shoryuken::Client.queues('ec2-stale-regions')
+stale_tags = Shoryuken::Client.queues('ec2-stale-tags')
+
+DELAY = ENV.fetch('DELAY') { 90 }.freeze
+
+REGIONS = ENV
+          .fetch('REGIONS') { 'us-west-1 us-west-2 us-east-1 eu-west-1 eu-central-1' }
+          .split($IFS)
+          .freeze
+
+REGIONS.each do |region|
+  stale_regions.send_message region
+  stale_tags.send_message region
+end
