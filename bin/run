@@ -1,0 +1,7 @@
+#!/bin/sh
+
+WORKDIR=${WORKDIR:-$(git rev-parse --show-toplevel)}
+
+cd "${WORKDIR}" || exit 101
+
+shoryuken -r .service.rb -C service.yaml
