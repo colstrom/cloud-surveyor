@@ -1,0 +1,41 @@
+#!/usr/bin/env ruby
+
+require 'shoryuken'
+require 'hamster'
+
+stale_regions = Shoryuken::Client.queues('ec2-stale-regions')
+stale_tags = Shoryuken::Client.queues('ec2-stale-tags')
+
+DELAY = ENV.fetch('DELAY') { 90 }.freeze
+
+REGIONS = ENV
+          .fetch('REGIONS') { 'us-west-1 us-west-2 us-east-1 eu-west-1 eu-central-1' }
+          .split($IFS)
+          .freeze
+
+STDERR.puts "WorkGenerator will generate one unit of work every #{DELAY} seconds."
+STDERR.puts
+STDERR.puts "Configured for #{REGIONS.size} regions:"
+REGIONS.each do |region|
+  STDERR.puts "\t - #{region}"
+end
+STDERR.puts
+
+worker = Fiber.new do
+  regions = Hamster::Deque[*REGIONS]
+  loop do
+    Fiber.yield(regions.first.tap { |r| regions = regions.shift.push r })
+  end
+end
+
+loop do
+  region = worker.resume
+  puts "Someone should check on #{region}..."
+
+  Thread.new { stale_regions.send_message region }
+  sleep DELAY
+
+  puts "Waiting an extra #{DELAY} seconds to check tags..."
+  Thread.new { stale_tags.send_message region }
+  sleep DELAY
+end
