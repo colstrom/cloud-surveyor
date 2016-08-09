@@ -1,6 +1,6 @@
 require 'shoryuken'
 require_relative 'miner'
-require_relative 'support/ec2'
+require_relative '../support/ec2'
 
 class TagSurveyor
   include ::Shoryuken::Worker
@@ -9,7 +9,7 @@ class TagSurveyor
 
   def perform(_, region)
     ::Support::EC2.new(region).tags.value.each do |tag|
-      TagCacher.perform_async(tag)
+      TagMiner.perform_async(tag)
     end
   end
 end
