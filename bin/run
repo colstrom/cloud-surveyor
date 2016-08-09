@@ -4,4 +4,4 @@ WORKDIR=${WORKDIR:-$(git rev-parse --show-toplevel)}
 
 cd "${WORKDIR}" || exit 101
 
-shoryuken -r ./service.rb -C service.yaml
+shoryuken -r ./lib/workers.rb -C queues.yaml
