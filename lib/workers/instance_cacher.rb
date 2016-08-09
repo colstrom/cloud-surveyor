@@ -32,8 +32,10 @@ class InstanceCacher
     id = instance.fetch('instance_id')
 
     register(id).tap do |added|
-      AssociatesAvailabilityZones.perform_async(id)
-      STDERR.puts "Registered new instance: #{id}" if added
+      if added
+        AssociatesAvailabilityZones.perform_async(id)
+        STDERR.puts "Registered new instance: #{id}"
+      end
     end
 
     update(id, instance).tap do |success|
