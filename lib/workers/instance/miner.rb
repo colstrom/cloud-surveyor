@@ -1,10 +1,10 @@
 require 'contracts'
 require 'redis'
 require 'shoryuken'
-require_relative 'associates_availability_zones'
-require_relative 'support/hash_compactor'
+require_relative '../associates_availability_zones'
+require_relative '../support/hash_compactor'
 
-class InstanceCacher
+class InstanceMiner
   include ::Shoryuken::Worker
   include ::Contracts::Core
   include ::Contracts::Builtin
