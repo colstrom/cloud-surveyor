@@ -1,5 +1,5 @@
 require 'shoryuken'
-require_relative 'tag_cacher'
+require_relative 'miner'
 require_relative 'support/ec2'
 
 class TagSurveyor
