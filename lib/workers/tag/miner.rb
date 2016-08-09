@@ -2,7 +2,7 @@ require 'contracts'
 require 'redis'
 require 'shoryuken'
 
-class TagCacher
+class TagMiner
   include ::Shoryuken::Worker
   include ::Contracts::Core
   include ::Contracts::Builtin
