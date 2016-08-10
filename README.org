@@ -1,0 +1,91 @@
+#+TITLE: Cloud Surveyor
+#+LATEX: \pagebreak
+
+* Important
+
+  ~cloud-surveyor~ is a work in progress. The API is not stable, and will change
+  without notice.
+
+* Overview
+
+  ~cloud-surveyor~ is an experimental set of tools for working with AWS with
+  limited access to the AWS APIs.
+
+* Why does this even exist?
+
+  A few reasons:
+
+  - If your AWS account has one or more systems that aggressively poll the API,
+    you may encounter Amazon's Rate Limits. While fixing the distruptive systems
+    is critical, fixes take time. ~cloud-surveyor~ reduces the impact of these
+    scenarios.
+
+  - Sometimes you want something that the Amazon APIs don't support (like a
+    convenient way of assigning Elastic IPs to AutoScaled instances).
+    ~cloud-surveyor~ gives you the data you need to solve those problems.
+
+* Assumptions
+
+  - You have a properly-configured AWS CLI.
+
+* Usage
+
+** Start Services
+
+   You'll need Redis to cache things offline, and an SQS-compatible message
+   queue for the workers. If none is configured, it will default to using SQS.
+
+   A =docker-compose= file is included. It will configure Redis and ElasticMQ.
+
+   #+BEGIN_SRC shell
+     docker-compose up -d
+   #+END_SRC
+
+** Create Queues
+
+   Your workers will need some queues to communicate over.
+
+   #+BEGIN_SRC shell
+     bin/create-queues
+   #+END_SRC
+
+** Seed the Cache
+
+    #+BEGIN_SRC shell
+      bin/oneshot-sync
+    #+END_SRC
+
+   This will populate Redis with data, once.
+
+** Build Something Awesome
+
+   ~cloud-surveyor~ opens up many possibilities, but what you do with it will
+   depend on what you need. There are some examples in =bin/= that may be
+   useful.
+
+*** Associate Elastic IPs based on Resource Tags
+
+    #+BEGIN_SRC shell
+      bin/associate-ips
+    #+END_SRC
+
+    This will look for instances with an =ElasticIP= tag, and associate the IP
+    defined in that tag, with the instance.
+
+*** Visualize your Regions
+
+    #+BEGIN_SRC
+      bin/map-regions
+    #+END_SRC
+
+    This will produce a =graphviz= representation of your regions, suitable for
+    processing with your preferred rendering engine (~fdp~ tends to work well
+    for this data).
+
+* License
+
+  ~cloud-surveyor~ is available under the [[https://tldrlegal.com/license/mit-license][MIT License]]. See ~LICENSE.txt~ for the full text.
+
+* Contributors
+
+  - [[https://colstrom.github.io/][Chris Olstrom]] | [[mailto:chris@olstrom.com][e-mail]] | [[https://twitter.com/ChrisOlstrom][Twitter]]
