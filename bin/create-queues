@@ -2,26 +2,9 @@
 
 require 'aws-sdk'
 require 'yaml'
+require_relative '../lib/config.rb'
 
-class Config
-  def path
-    @path ||= File.expand_path ENV.fetch('CONFIG_PATH') { './queues.yaml' }
-  end
-
-  def config
-    @config ||= File.exist?(path) ? YAML.load_file(path) : {}
-  end
-
-  def endpoint
-    @endpoint ||= config.dig('aws', 'sqs_endpoint')
-  end
-
-  def queues
-    @queues ||= config.fetch('queues') { [] }.map(&:first)
-  end
-end
-
-config = Config.new
+config = CloudSurveyor::Config.new
 
 sqs = if config.endpoint
         Aws::SQS::Client.new endpoint: config.endpoint
