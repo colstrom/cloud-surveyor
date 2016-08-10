@@ -1,0 +1,11 @@
+---
+version: "2"
+services:
+  elasticmq:
+    image: colstrom/elasticmq
+    ports:
+      - "9324:9324"
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
