@@ -2,6 +2,12 @@
 aws:
   sqs_endpoint: http://localhost:9324
   sns_endpoint: http://localhost:9324
+regions:
+  - us-west-1
+  - us-west-2
+  - us-east-1
+  - eu-west-1
+  - eu-central-1
 queues:
   - [ec2-availability-zone-associations, 1]
   - [ec2-instance-ready, 1]
