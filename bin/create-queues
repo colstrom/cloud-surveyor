@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+
+require 'aws-sdk'
+require 'yaml'
+
+class Config
+  def path
+    @path ||= File.expand_path ENV.fetch('CONFIG_PATH') { './queues.yaml' }
+  end
+
+  def config
+    @config ||= File.exist?(path) ? YAML.load_file(path) : {}
+  end
+
+  def endpoint
+    @endpoint ||= config.dig('aws', 'sqs_endpoint')
+  end
+
+  def queues
+    @queues ||= config.fetch('queues') { [] }.map(&:first)
+  end
+end
+
+config = Config.new
+
+sqs = if config.endpoint
+        Aws::SQS::Client.new endpoint: config.endpoint
+      else
+        Aws::SQS::Client.new
+      end
+
+config.queues.each do |name|
+  sqs.create_queue queue_name: name
+end
