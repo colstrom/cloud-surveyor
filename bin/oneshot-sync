@@ -1,20 +1,16 @@
 #!/usr/bin/env ruby
 
-require 'shoryuken'
+require_relative '../lib/queue'
 
-stale_regions = Shoryuken::Client.queues('ec2-stale-regions')
-stale_tags = Shoryuken::Client.queues('ec2-stale-tags')
-stale_vpcs = Shoryuken::Client.queues('ec2-stale-vpcs')
-
-DELAY = ENV.fetch('DELAY') { 90 }.freeze
-
-REGIONS = ENV
-          .fetch('REGIONS') { 'us-west-1 us-west-2 us-east-1 eu-west-1 eu-central-1' }
-          .split($IFS)
-          .freeze
-
-REGIONS.each do |region|
-  stale_regions.send_message region
-  stale_tags.send_message region
-  stale_vpcs.send_message region
+CloudSurveyor::Queue.new.tap do |queue|
+  queue
+    .service
+    .list_queues
+    .queue_urls
+    .select { |name| name.include? 'stale' }
+    .each do |stale|
+    queue.config.regions.each do |region|
+      queue.service.send_message queue_url: stale, message_body: region
+    end
+  end
 end
