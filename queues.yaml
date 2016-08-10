@@ -1,4 +1,7 @@
 ---
+aws:
+  sqs_endpoint: http://localhost:9324
+  sns_endpoint: http://localhost:9324
 queues:
   - [ec2-availability-zone-associations, 1]
   - [ec2-instance-ready, 1]
