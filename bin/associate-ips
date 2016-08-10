@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+
+require 'aws-sdk'
+require 'redis'
+
+Redis.new.tap do |redis|
+  redis.smembers('instance:tag:ElasticIP').each do |instance|
+    redis.get("instance:#{instance}:tag:ElasticIP").tap do |desired_ip|
+      redis.hget("instance:#{instance}", 'network_interfaces:0:association:public_ip').tap do |assigned_ip|
+        redis.hget("instance:#{instance}", 'placement:availability_zone').gsub(/[[:alpha:]]$/, '').tap do |region|
+          if desired_ip == assigned_ip
+            STDERR.puts "#{desired_ip} already associated with #{instance}"
+          else
+            Aws::EC2::Client.new(region: region).tap do |ec2|
+              if ec2.associate_address(public_ip: desired_ip, instance_id: instance).successful?
+                STDERR.puts "Associated #{desired_ip} with #{instance}"
+              else
+                STDERR.puts "Failed to associate #{desired_ip} with #{instance}"
+              end
+            end
+          end
+        end
+      end
+    end
+  end
+end
