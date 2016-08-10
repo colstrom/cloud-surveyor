@@ -1,17 +1,14 @@
 #!/usr/bin/env ruby
 
-require 'aws-sdk'
-require 'yaml'
-require_relative '../lib/config.rb'
+require_relative '../lib/config'
+require_relative '../lib/queue'
 
 config = CloudSurveyor::Config.new
-
-sqs = if config.endpoint
-        Aws::SQS::Client.new endpoint: config.endpoint
-      else
-        Aws::SQS::Client.new
-      end
+queue = CloudSurveyor::Queue.new
 
 config.queues.each do |name|
-  sqs.create_queue queue_name: name
+  queue.service.create_queue queue_name: name
 end
+
+require 'pry'
+pry
