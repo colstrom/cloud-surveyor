@@ -9,6 +9,3 @@ queue = CloudSurveyor::Queue.new
 config.queues.each do |name|
   queue.service.create_queue queue_name: name
 end
-
-require 'pry'
-pry
